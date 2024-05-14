@@ -10,10 +10,10 @@ from firebase import firebase
 # Declaración de las variables ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 update_interval = 5  # Intervalo de actualización de la base de datos en segundos
-update_buffer = {f'c{i}': True for i in range(1, 29)}  # Buffer para almacenar los cambios en la base de datos
+update_buffer = {f'c{i}': True for i in range(1, 29)} # Buffer para almacenar los cambios en la base de datos
 
 # Especificamos la cámara que va a detectar o tomará como una ventana emergente
-cap = cv2.VideoCapture(1)
+cap = cv2.VideoCapture(0)
 ret, frame = cap.read()
 
 # Se establece el modelo de Red neuronal que usaremos (En este caso Yolov8 nano)
@@ -31,38 +31,36 @@ classes = ['person', 'bicycle', 'car', 'motorbike', 'aeroplane', 'bus', 'train',
 
 # Se establece la zona a detectar los espacios (Es la zona de estacionamiento) forma de Lineal empezando desde la izquierda
 
-#F1
-estC1 = np.array([[181, 28], [219, 28], [219, 104], [181, 104],])
-estC2 = np.array([[223, 28], [260, 28], [260, 104], [223, 104],])
-estC3 = np.array([[265, 28], [303, 28], [303, 104], [265, 104],])
-estC4 = np.array([[306, 28], [344, 28], [344, 104], [306, 104],])
-estC5 = np.array([[347, 28], [385, 28], [385, 104], [347, 104],])
-estC6 = np.array([[390, 28], [427, 28], [427, 104], [390, 104],])
-estC7 = np.array([[432, 28], [469, 28], [469, 104], [432, 104],])
-estC8 = np.array([[473, 28], [512, 28], [512, 104], [473, 104],])
-#F2
-estC9 = np.array([[181, 114], [218, 114], [218, 188], [181, 188],])
-estC10 = np.array([[223, 114], [260, 114], [260, 188], [223, 188],]) 
-estC11 = np.array([[264, 114], [301, 114], [301, 188], [264, 188],])
-estC12 = np.array([[306, 114], [343, 114], [343, 188], [306, 188],])
-estC13 = np.array([[349, 114], [385, 114], [385, 188], [349, 188],])
-estC14 = np.array([[390, 114], [426, 114], [426, 188], [390, 188],]) 
-estC15 = np.array([[430, 114], [468, 114], [468, 188], [430, 188],])
-estC16 = np.array([[472, 114], [510, 114], [510, 188], [472, 188],])
-#F3
-estC17 = np.array([[9, 280], [48, 280], [48, 355], [9, 355]])
-estC18 = np.array([[54, 280], [90, 280], [90, 355], [54, 355]])
-estC19 = np.array([[95, 280], [134, 280], [134, 355], [95, 355]])
-estC20 = np.array([[138, 280], [174, 280], [174, 355], [138, 355]])
-estC21 = np.array([[180, 280], [216, 280], [216, 355], [180, 355]])
-estC22 = np.array([[222, 280], [259, 280], [259, 355], [222, 355]])
-estC23 = np.array([[264, 280], [300, 280], [300, 355], [264, 355]])
-estC24 = np.array([[305, 280], [342, 280], [342, 355], [305, 355]])
-estC25 = np.array([[346, 280], [384, 280], [384, 355], [346, 355]])
-estC26 = np.array([[388, 280], [425, 280], [425, 355], [388, 355]])
-estC27 = np.array([[430, 280], [467, 280], [467, 355], [430, 355]])
-estC28 = np.array([[472, 280], [510, 280], [510, 355], [472, 355]])
-
+regions = {
+    'c1': [[387, 306], [423, 306], [420, 376], [385, 376]],
+    'c2': [[346, 306], [380, 306], [380, 376], [346, 376]],
+    'c3': [[306, 306], [341, 306], [341, 376], [306, 376]],
+    'c4': [[264, 306], [301, 306], [301, 376], [264, 376]],
+    'c5': [[223, 306], [260, 306], [260, 376], [223, 376]],
+    'c6': [[183, 306], [219, 306], [219, 376], [183, 376]],
+    'c7': [[141, 306], [177, 306], [177, 376], [141, 376]],
+    'c8': [[98, 306], [136, 306], [136, 376], [100, 376]],
+    'c9': [[389, 222], [426, 222], [426, 295], [389, 295]],
+    'c10': [[349, 222], [384, 222], [384, 295], [346, 295]],
+    'c11': [[307, 222], [343, 222], [343, 295], [307, 295]],
+    'c12': [[265, 222], [303, 222], [303, 295], [265, 295]],
+    'c13': [[224, 222], [260, 222], [260, 295], [224, 295]],
+    'c14': [[182, 222], [219, 222], [219, 295], [182, 295]],
+    'c15': [[139, 222], [176, 222], [176, 295], [139, 295]],
+    'c16': [[97, 222], [134, 222], [134, 295], [97, 295]],
+    'c17': [[566, 57], [605, 57], [599, 131], [562, 131]],
+    'c18': [[522, 57], [561, 57], [556, 131], [517, 131]],
+    'c19': [[481, 57], [518, 57], [514, 131], [476, 131]],
+    'c20': [[438, 57], [475, 57], [472, 131], [436, 131]],
+    'c21': [[393, 56], [432, 56], [429, 131], [393, 131]],
+    'c22': [[353, 54], [389, 54], [389, 131], [350, 131]],
+    'c23': [[309, 54], [347, 54], [347, 131], [309, 131]],
+    'c24': [[265, 51], [304, 52], [304, 131], [265, 131]],
+    'c25': [[223, 51], [260, 53], [260, 131], [223, 131]],
+    'c26': [[179, 51], [217, 51], [217, 131], [180, 131]],
+    'c27': [[136, 51], [174, 51], [176, 131], [138, 131]],
+    'c28': [[92, 51], [130, 51], [130, 131], [94, 131]],
+}
 
 
 # Se establece y se configura la base de datos a la que enviaremos datos
@@ -128,37 +126,37 @@ while ret:
 
                 for i in range(1, 29):
                     key = f'c{i}'
-                    estC = eval(f'estC{i}')
-                    estadoEst = cv2.pointPolygonTest(np.array(estC, np.int32), (xc, yc), False)
+                    space = regions[key]
+                    estadoEst = cv2.pointPolygonTest(np.array(space, np.int32), (xc, yc), False)
 
                     if estadoEst >= 0: #Esta libre?
-                        #print("Estacionado")
+                        print("Estacionado")
                         #NO
-                        if update_buffer[key] != False:
+                        if update_buffer.get(key, False) != False:
                             update_buffer[key] = False
   
                     else:
-                        #print("Libre")
+                        print("Libre")
                         #Si
-                        if update_buffer[key] != True:
-                            update_buffer[key] = True
-                            
+                        if update_buffer.get(key, True) != True:
+                            update_buffer[key] = True  
                             
                             
                 print("Contenido de update_buffer al final del bucle:")
                 print(update_buffer)
 
-    for estC in [estC1, estC2, estC3, estC4, estC5, estC6, estC7, estC8, estC9, estC10,
-             estC11, estC12, estC13, estC14, estC15, estC16, estC17, estC18, estC19, estC20,
-             estC21, estC22, estC23, estC24, estC25, estC26, estC27, estC28]:
-        
-        cv2.polylines(img=frame, pts=[estC], isClosed=True, color=(0,0,255), thickness=3)
+    # Imprime las celdas
+    for region_points in regions.values():
+        cv2.polylines(img=frame, pts=[np.array(region_points, np.int32)], isClosed=True, color=(0, 0, 255), thickness=3)
+
+    #Si llegan las actualizacones de los datos####
 
     if time.time() - start_time >= update_interval:
             for key, value in update_buffer.items():
-                firebase.put('/sectorA1', key, str(value))
+                firebase.put('/sectorA1', key, value)
             update_buffer.clear()
             start_time = time.time()
+
 # Se cierra el programa ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     # Se muestra la cantidad fps que tenemos en el video/cámara/programa
@@ -168,7 +166,6 @@ while ret:
     # Especificamos que se cierra la ventana de la cámara con el botón "esc"
     if cv2.waitKey(1) & 0xff == 27:
         break
-
 
     ret, frame = cap.read()
 
